@@ -33,7 +33,8 @@ function buildTree(rows) {
 export default function PostDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { user, loading: authLoading } = useAuth()
+  // user 객체는 토큰이 갱신될 때마다 새 객체가 되므로, effect 의존성에는 userId를 씁니다.
+  const { userId, loading: authLoading } = useAuth()
 
   const [post, setPost] = useState(null)
   const [comments, setComments] = useState([])
@@ -66,6 +67,11 @@ export default function PostDetailPage() {
         .eq('id', id)
         .maybeSingle()
 
+      // 22P02 = uuid 형식이 아닌 id (주소를 잘못 입력한 경우)
+      if (postError && postError.code === '22P02') {
+        setNotFound(true)
+        return
+      }
       if (postError) throw postError
       if (!data) {
         setNotFound(true)
@@ -83,9 +89,9 @@ export default function PostDetailPage() {
   }, [id, loadComments])
 
   useEffect(() => {
-    if (authLoading || !user) return
+    if (authLoading || !userId) return
     loadAll()
-  }, [authLoading, user, loadAll])
+  }, [authLoading, userId, loadAll])
 
   async function refreshComments() {
     try {
@@ -137,7 +143,7 @@ export default function PostDetailPage() {
     )
   }
 
-  if (!user) {
+  if (!userId) {
     return (
       <Layout>
         <div className="card text-center">

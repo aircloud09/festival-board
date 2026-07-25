@@ -1,5 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 
+export class HttpError extends Error {
+  constructor(status, message) {
+    super(message)
+    this.status = status
+  }
+}
+
 // service_role 클라이언트는 RLS를 무시합니다.
 // 따라서 모든 함수는 requireAdmin을 통과한 뒤에만 쿼리해야 합니다.
 function serviceClient() {
@@ -10,13 +17,6 @@ function serviceClient() {
     throw new HttpError(500, '서버 설정이 올바르지 않습니다.')
   }
   return createClient(url, key, { auth: { persistSession: false } })
-}
-
-export class HttpError extends Error {
-  constructor(status, message) {
-    super(message)
-    this.status = status
-  }
 }
 
 export function jsonResponse(body, status = 200) {

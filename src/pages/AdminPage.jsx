@@ -203,9 +203,10 @@ function ContentTab({ rows, type, onDelete }) {
             >
               <td className="whitespace-nowrap px-3 py-2">{row.author_name}</td>
               <td className="whitespace-nowrap px-3 py-2">{row.author_student_id}</td>
+              {/* line-clamp는 display를 -webkit-box로 바꾸므로 display 유틸리티와 같이 쓰면 안 됩니다 */}
               <td className="max-w-[280px] px-3 py-2">
-                {row.title ? <span className="font-semibold">{row.title} · </span> : null}
-                <span className="line-clamp-2 inline-block align-top">{row.content}</span>
+                {row.title ? <p className="truncate font-semibold">{row.title}</p> : null}
+                <p className="line-clamp-2">{row.content}</p>
               </td>
               <td className="whitespace-nowrap px-3 py-2">{formatDateTime(row.created_at)}</td>
               <td className="whitespace-nowrap px-3 py-2">{row.is_anonymous ? '익명' : '실명'}</td>
@@ -258,11 +259,11 @@ function ReportsTab({ rows, onDelete }) {
               </td>
               <td className="max-w-[280px] px-3 py-2">
                 {report.target_title ? (
-                  <span className="font-semibold">{report.target_title} · </span>
+                  <p className="truncate font-semibold">{report.target_title}</p>
                 ) : null}
-                <span className="line-clamp-2 inline-block align-top">
+                <p className="line-clamp-2">
                   {report.target_content ?? '(대상을 찾을 수 없습니다)'}
-                </span>
+                </p>
               </td>
               <td className="whitespace-nowrap px-3 py-2">{formatDateTime(report.created_at)}</td>
               <td className="whitespace-nowrap px-3 py-2">

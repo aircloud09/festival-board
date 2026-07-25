@@ -7,8 +7,25 @@ const CONTENT_MAX = 1000
 const COOLDOWN_SEC = 30
 const COOLDOWN_KEY = 'festival-board:last-post-at'
 
+// 시크릿 모드 등에서 localStorage 접근이 막히면 예외가 나므로 감싸둡니다.
+function readLastPostAt() {
+  try {
+    return window.localStorage.getItem(COOLDOWN_KEY)
+  } catch {
+    return null
+  }
+}
+
+function writeLastPostAt(value) {
+  try {
+    window.localStorage.setItem(COOLDOWN_KEY, value)
+  } catch {
+    // 저장이 막힌 환경에서는 도배 방지만 동작하지 않고 글 등록은 정상 진행됩니다.
+  }
+}
+
 function remainingCooldown() {
-  const raw = window.localStorage.getItem(COOLDOWN_KEY)
+  const raw = readLastPostAt()
   if (!raw) return 0
   const last = Number(raw)
   if (!Number.isFinite(last)) return 0
@@ -68,7 +85,7 @@ export default function PostForm({ onClose, onCreated }) {
       })
       if (insertError) throw insertError
 
-      window.localStorage.setItem(COOLDOWN_KEY, String(Date.now()))
+      writeLastPostAt(String(Date.now()))
       onCreated()
       onClose()
     } catch (err) {

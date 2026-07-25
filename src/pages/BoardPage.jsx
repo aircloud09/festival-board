@@ -10,7 +10,8 @@ import { supabase } from '../lib/supabase'
 const PAGE_SIZE = 20
 
 export default function BoardPage() {
-  const { user, loading: authLoading } = useAuth()
+  // user 객체는 토큰이 갱신될 때마다 새 객체가 되므로, effect 의존성에는 userId를 씁니다.
+  const { userId, loading: authLoading } = useAuth()
 
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(false)
@@ -47,19 +48,24 @@ export default function BoardPage() {
 
   useEffect(() => {
     if (authLoading) return
-    if (!user) {
+    if (!userId) {
       setPosts([])
       return
     }
     loadFirstPage()
-  }, [authLoading, user, loadFirstPage])
+  }, [authLoading, userId, loadFirstPage])
 
   async function handleLoadMore() {
     setLoadingMore(true)
     setError('')
     try {
       const rows = await fetchPage(posts.length)
-      setPosts((prev) => [...prev, ...rows])
+      // 조회 사이에 새 글이 올라오면 offset이 밀려 같은 글이 다시 내려올 수 있습니다.
+      // 중복을 걸러내지 않으면 React key가 겹칩니다.
+      setPosts((prev) => {
+        const seen = new Set(prev.map((p) => p.id))
+        return [...prev, ...rows.filter((p) => !seen.has(p.id))]
+      })
       setHasMore(rows.length === PAGE_SIZE)
     } catch (err) {
       console.error('[board] 추가 조회 실패', err)
@@ -77,7 +83,7 @@ export default function BoardPage() {
     )
   }
 
-  if (!user) {
+  if (!userId) {
     return (
       <Layout>
         <div className="card text-center">
