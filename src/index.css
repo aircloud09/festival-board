@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand:      #1565C0;
+  --color-brand-dark: #0D47A1;
+  --color-surface:    #FFFFFF;
+  --color-canvas:     #F7F8FA;
+  --color-line:       #E5E7EB;
+  --color-ink:        #1F2937;
+  --color-ink-soft:   #6B7280;
+  --color-danger:     #DC2626;
+  --color-like:       #EF4444;
+  --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-[15px] text-ink
+      outline-none placeholder:text-ink-soft focus:border-brand;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2 text-[15px]
+      font-semibold text-white transition-colors hover:bg-brand-dark
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-lg border border-line bg-surface
+      px-3 py-1.5 text-[13px] text-ink transition-colors hover:bg-canvas
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .card {
+    @apply rounded-xl border border-line bg-surface p-4;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+}
